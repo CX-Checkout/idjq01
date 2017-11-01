@@ -56,4 +56,44 @@ public class AppTest {
 	public void invalid_letter_gives_minus1() {
 		assertThat(App.checkout("G"), equalTo(-1));
 	}
+	
+	@Test
+	public void e_costs_forty() {
+		assertThat(App.checkout("E"), equalTo(40));
+	}
+	
+	@Test
+	public void five_a_costs_200() {
+		assertThat(App.checkout("AAAAA"), equalTo(200));
+	}
+	
+	@Test
+	public void multi_multibuy_works_correctly() {
+		assertThat(App.checkout("AAAAAAAAA"), equalTo(200 + 180));
+	}
+	
+	@Test
+	public void two_e_give_one_free_b() {
+		assertThat(App.checkout("EBE"), equalTo(80));
+	}
+	
+	@Test
+	public void two_e_give_one_free_b_multi() {
+		assertThat(App.checkout("EBEBEE"), equalTo(160));
+	}
+	
+	@Test
+	public void ABCDE_155() {
+		assertThat(App.checkout("ABCDE"), equalTo(155));
+	}
+	
+	@Test
+	public void ABCDEABCDE_280() {
+		assertThat(App.checkout("ABCDEABCDE"), equalTo(280));
+	}
+	
+	@Test
+	public void CCADDEEBBA_280() {
+		assertThat(App.checkout("CCADDEEBBA"), equalTo(280));
+	}
 }
