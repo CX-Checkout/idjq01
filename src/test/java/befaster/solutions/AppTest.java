@@ -54,7 +54,7 @@ public class AppTest {
 	
 	@Test
 	public void invalid_letter_gives_minus1() {
-		assertThat(App.checkout("G"), equalTo(-1));
+		assertThat(App.checkout("1"), equalTo(-1));
 	}
 	
 	@Test
@@ -115,5 +115,10 @@ public class AppTest {
 	@Test
 	public void FFFFF_costs_30() {
 		assertThat(App.checkout("FFFF"), equalTo(30));
+	}
+	
+	@Test
+	public void test_10H_and_4R_and_4Q_is_something() {
+		assertThat(App.checkout("HHHHHHHHHHRRRRQQQQ"), equalTo(80 + 200 + 80));
 	}
 }

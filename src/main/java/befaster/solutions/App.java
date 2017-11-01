@@ -4,78 +4,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
-public class App {
-	private static class MultiBuy {
-		public final int quant;
-		public final int cost;
-		
-		public MultiBuy(int quant, int cost) {
-			this.quant = quant;
-			this.cost = cost;
-		}
-	}
-	
-	private static final Map<String, List<MultiBuy>> offers = new HashMap<>();
-	static {
-		// offers ordered from highest quant to lowest
-		offers.put("A", asList(new MultiBuy(5, 200), new MultiBuy(3, 130)));
-		offers.put("B", singletonList(new MultiBuy(2, 45)));
-		offers.put("F", singletonList(new MultiBuy(3, 20)));
-	}
-	
-	private static final Map<String, Integer> prices = new HashMap<>();
-	static {
-		prices.put("A", 50);
-		prices.put("B", 30);
-		prices.put("C", 20);
-		prices.put("D", 15);
-		prices.put("E", 40);
-		prices.put("F", 10);
-	}
-	
-	private static final class Deduct {
-		private final String item;
-		private final int number;
-		private final String freeItem;
-		// assume one item free
-		private final int freeCount = 1;
-		
-		public Deduct(String item, int number, String free) {
-			this.item = item;
-			this.number = number;
-			this.freeItem = free;
-		}
-		
-		public void deduct(Map<String, Integer> items) {
-			Integer found = items.get(item);
-			if(found == null || found < number) {
-				return;
-			}
-			
-			Integer overpaid = items.get(freeItem);
-			if(overpaid == null) {
-				return;
-			}
-			int won = (found / number) * freeCount;
-			
-			Integer toPay = Math.max((overpaid - won), 0);
-			items.put(freeItem, toPay);
-		}
-	}
-	
-	private static final List<Deduct> deductions = asList(new Deduct("E", 2, "B"));
-	
+public class App {	
 	public static int checkout(String items) {
 		Map<String, Integer> counts = countProducts(items);
 		
-		if(!prices.keySet().containsAll(counts.keySet())) {
+		PricesAndOffers prices = PriceFactory.obtain();
+		
+		if(!prices.hasAll(counts.keySet())) {
 			return -1;
 		}
 		
-		deductions.stream().forEach((d) -> d.deduct(counts));
+		prices.deductions().forEach((d) -> d.deduct(counts));
 		
 		int sum = 0;
 		for(Map.Entry<String, Integer>entry : counts.entrySet()) {
@@ -85,7 +28,7 @@ public class App {
 			sum += result.cost;
 			count = result.remainder;
 			
-			sum += count * prices.get(item);
+			sum += count * prices.price(item);
 		}
 		return sum;
 	}
@@ -105,13 +48,14 @@ public class App {
 	}
 	
 	private static MultiBuyResult doMultiBuying(String item, int count) {
-		List<MultiBuy> found = offers.get(item);
+		
+		List<PricesAndOffers.MultiBuy> found = PriceFactory.obtain().offers(item);
 		if(found == null) {
 			return MultiBuyResult.empty(count);
 		}
 		
 		int sum = 0;
-		for(MultiBuy buy: found) {
+		for(PricesAndOffers.MultiBuy buy: found) {
 			MultiBuyResult result = doMultiBuy(count, buy);
 			sum += result.cost;
 			count = result.remainder;
@@ -120,7 +64,7 @@ public class App {
 		return new MultiBuyResult(sum, count);
 	}
 	
-	private static MultiBuyResult doMultiBuy(int count, MultiBuy offer) {
+	private static MultiBuyResult doMultiBuy(int count, PricesAndOffers.MultiBuy offer) {
 		if(offer.quant > count) {
 			return MultiBuyResult.empty(count);
 		}
