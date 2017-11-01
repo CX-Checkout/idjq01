@@ -96,4 +96,24 @@ public class AppTest {
 	public void CCADDEEBBA_280() {
 		assertThat(App.checkout("CCADDEEBBA"), equalTo(280));
 	}
+	
+	@Test
+	public void f_costs_10() {
+		assertThat(App.checkout("F"), equalTo(10));
+	}
+	
+	@Test
+	public void FFF_costs_20() {
+		assertThat(App.checkout("FFF"), equalTo(20));
+	}
+	
+	@Test
+	public void FFFFFEBE_costs_110() {
+		assertThat(App.checkout("FFFFEBE"), equalTo(80 + 30));
+	}
+	
+	@Test
+	public void FFFFF_costs_30() {
+		assertThat(App.checkout("FFFF"), equalTo(30));
+	}
 }

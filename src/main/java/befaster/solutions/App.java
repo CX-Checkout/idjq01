@@ -23,6 +23,7 @@ public class App {
 		// offers ordered from highest quant to lowest
 		offers.put("A", asList(new MultiBuy(5, 200), new MultiBuy(3, 130)));
 		offers.put("B", singletonList(new MultiBuy(2, 45)));
+		offers.put("F", singletonList(new MultiBuy(3, 20)));
 	}
 	
 	private static final Map<String, Integer> prices = new HashMap<>();
@@ -32,6 +33,7 @@ public class App {
 		prices.put("C", 20);
 		prices.put("D", 15);
 		prices.put("E", 40);
+		prices.put("F", 10);
 	}
 	
 	private static final class Deduct {
@@ -57,7 +59,7 @@ public class App {
 			if(overpaid == null) {
 				return;
 			}
-			int won = found / number;
+			int won = (found / number) * freeCount;
 			
 			Integer toPay = Math.max((overpaid - won), 0);
 			items.put(freeItem, toPay);
