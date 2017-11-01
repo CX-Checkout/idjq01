@@ -1,21 +1,24 @@
 package befaster.solutions;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toList;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class PricesAndOffers {
 	
 	private final Map<String, Integer> prices;
-	private final Map<String, List<MultiBuy>> offers;
+	private final Set<MultiBuy> offers;
 	private final List<Deduct> deductions;
 	
-	public PricesAndOffers(Map<String, Integer> prices, Map<String, List<MultiBuy>> offers, List<Deduct> deductions) {
+	public PricesAndOffers(Map<String, Integer> prices, Set<MultiBuy> offers, List<Deduct> deductions) {
 		this.prices = prices;
 		this.offers = offers;
 		this.deductions = deductions;
@@ -33,17 +36,43 @@ public class PricesAndOffers {
 		return deductions.stream();
 	}
 	
-	public List<MultiBuy> offers(String item) {
-		return offers.get(item);
+	public List<MultiBuy> offers() {
+		ArrayList<MultiBuy> list = new ArrayList<>(offers.stream().collect(toList()));
+		Collections.sort(list, (a, b) -> b.quant - a.quant);
+		return list;
 	}
 	
 	public static class MultiBuy {
+		public final Set<String> items;
 		public final int quant;
 		public final int cost;
 		
-		public MultiBuy(int quant, int cost) {
+		public MultiBuy(String item, int quant, int cost) {
+			this(singleton(item), quant, cost);
+		}
+		
+		public MultiBuy(Set<String> items, int quant, int cost) {
+			this.items = items;
 			this.quant = quant;
 			this.cost = cost;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if(this == o) {
+				return true;
+			}
+			if(o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			
+			MultiBuy multiBuy = (MultiBuy) o;
+			
+			if(quant != multiBuy.quant) {
+				return false;
+			}
+			return items != null ? items.equals(multiBuy.items) : multiBuy.items == null;
+			
 		}
 	}
 	

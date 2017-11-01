@@ -118,7 +118,22 @@ public class AppTest {
 	}
 	
 	@Test
+	public void test_10H_and_4R_and_2Q_is_something() {
+		assertThat(App.checkout("HHHHHHHHHHRRRRQQ"), equalTo(80 + 200 + 30));
+	}
+	
+	@Test
 	public void test_10H_and_4R_and_4Q_is_something() {
 		assertThat(App.checkout("HHHHHHHHHHRRRRQQQQ"), equalTo(80 + 200 + 80));
+	}
+	
+	@Test
+	public void test_something_evil() {
+		assertThat(App.checkout("SSSTTTXXXYYYZZZ"), equalTo(5 * 45));
+	}
+	
+	@Test
+	public void picks_most_expensive() {
+		assertThat(App.checkout("SZZZS"), equalTo(45 + 40));
 	}
 }
